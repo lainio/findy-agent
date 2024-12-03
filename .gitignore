@@ -8,7 +8,8 @@ ONEfindy.bak.json
 ONEfindy.json
 ONEdata.gob
 *.vim
-go.work.bak
+
+.work/
 
 # Binaries for programs and plugins
 *.exe
