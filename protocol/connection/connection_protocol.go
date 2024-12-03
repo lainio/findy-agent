@@ -173,13 +173,6 @@ func addToSovCacheIf(ssiWA ssi.Agent, caller core.DID) {
 	}
 }
 
-func max(a, b int) int {
-	if a > b {
-		return a
-	}
-	return b
-}
-
 func buildRouting(addr, rKey string, rKeys []string, didMethod method.Type) []string {
 	switch didMethod {
 	case method.TypePeer:

@@ -80,13 +80,6 @@ func checkHTTPStatus(response *http.Response, data []byte) ([]byte, error) {
 	return data, nil
 }
 
-func min(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
-}
-
 // downloadFile from url and sets the filepath to name of the local file.
 // If filepath is empty uses the filename of the download URL.
 func downloadFile(downloadDir, filepath, url string) (name string, err error) {
