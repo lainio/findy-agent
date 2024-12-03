@@ -96,10 +96,13 @@ func checkReady(w http.ResponseWriter, _ *http.Request) {
 	try.To1(w.Write([]byte("Not ready")))
 }
 
-func setHandler(serviceName string,
+func setHandler(
+	serviceName string,
 	mux *http.ServeMux,
-	handler func(http.ResponseWriter, *http.Request)) (pattern string) {
-
+	handler func(http.ResponseWriter, *http.Request),
+) (
+	pattern string,
+) {
 	pattern = fmt.Sprintf("/%s/", serviceName)
 	mux.HandleFunc(pattern, handler)
 	return pattern

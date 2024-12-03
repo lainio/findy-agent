@@ -5,7 +5,7 @@ import (
 	"encoding/binary"
 	"encoding/gob"
 	"encoding/json"
-	"fmt"
+	"errors"
 	"strings"
 	"time"
 
@@ -22,6 +22,7 @@ import (
 	"github.com/findy-network/findy-common-go/dto"
 	"github.com/golang/glog"
 	"github.com/lainio/err2"
+	"github.com/lainio/err2/assert"
 	"github.com/lainio/err2/try"
 	"github.com/mr-tron/base58"
 )
@@ -158,14 +159,12 @@ func (m *responseImpl) PayloadToWait() (didcomm.Payload, psm.SubState) {
 }
 
 func connectionFromSignedData(cs *ConnectionSignature) (c *Connection, err error) {
-	defer err2.Handle(&err, "connection from signature")
+	defer assert.PushAsserter(assert.Plain)()
+	
+	defer err2.Handle(&err, err2.Noop, err2.Log) // handlers > 1: err annotated
 
 	data := try.To1(utils.DecodeB64(cs.SignedData))
-	if len(data) == 0 {
-		s := missingInvalidErrorString
-		glog.Error(s)
-		return nil, fmt.Errorf(s)
-	}
+	assert.SNotEmpty(data, missingInvalidErrorString)
 	connectionJSON := data[8:]
 
 	var connection Connection
@@ -178,13 +177,13 @@ func connectionFromSignedData(cs *ConnectionSignature) (c *Connection, err error
 }
 
 func (m *responseImpl) verifySignature(DID core.DID) (err error) {
-	defer err2.Handle(&err, "verify sign")
+	defer assert.PushAsserter(assert.Plain)()
+	
+	defer err2.Handle(&err, err2.Noop, err2.Log) // handlers > 1: err annotated
 
 	data := try.To1(utils.DecodeB64(m.Response.ConnectionSignature.SignedData))
 	if len(data) == 0 {
-		s := missingInvalidErrorString
-		glog.Error(s)
-		return fmt.Errorf(s)
+		return errors.New(missingInvalidErrorString)
 	}
 
 	signatureData := try.To1(utils.DecodeB64(m.Response.ConnectionSignature.Signature))
