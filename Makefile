@@ -1,5 +1,8 @@
-TEST_TIMEOUT:="70s"
-TEST_ARGS ?= -args -logtostderr -v=3
+TEST_TIMEOUT:="-timeout 70s"
+TEST_START_ARGS ?= -args -logtostderr -v=3
+TEST_ARGS ?= 
+
+# Use with what ever subpkg
 TEST_PKG?=./grpc/...
 
 VERSION=$(shell cat ./VERSION)
@@ -96,50 +99,53 @@ lint_e:
 lint:
 	@golangci-lint run
 
+testX:
+	echo $(TEST_ARGS)
+
 test:
-	$(GO) test -p 1 -failfast ./...
+	$(GO) test $(TEST_ARGS) -failfast ./...
 
 testr:
-	$(GO) test -timeout $(TEST_TIMEOUT) -p 1 -failfast -race ./... | tee ../testr.log
+	$(GO) test $(TEST_ARGS) $(TEST_TIMEOUT) -p 1 -failfast -race ./... | tee ../testr.log
 
 test_pkgv:
-	$(GO) test -v -timeout $(TEST_TIMEOUT) -p 1 -failfast $(TEST_PKG) $(TEST_ARGS) | tee ../testr.log
+	$(GO) test $(TEST_ARGS) -v $(TEST_TIMEOUT) -p 1 -failfast $(TEST_PKG) $(TEST_START_ARGS) | tee ../testr.log
 
 test_grpcv:
-	$(GO) test -v -timeout $(TEST_TIMEOUT) -p 1 -failfast ./grpc/... $(TEST_ARGS) | tee ../testr.log
+	$(GO) test $(TEST_ARGS) -v $(TEST_TIMEOUT) -p 1 -failfast ./grpc/... $(TEST_START_ARGS) | tee ../testr.log
 
 test_grpc:
-	$(GO) test -timeout $(TEST_TIMEOUT) -p 1 -failfast ./grpc/... $(TEST_ARGS) | tee ../testr.log
+	$(GO) test $(TEST_ARGS) $(TEST_TIMEOUT) -p 1 -failfast ./grpc/... $(TEST_START_ARGS) | tee ../testr.log
 
 test_grpc_rv:
-	$(GO) test -v -timeout $(TEST_TIMEOUT) -p 1 -failfast -race ./grpc/... $(TEST_ARGS) | tee ../testr.log
+	$(GO) test $(TEST_ARGS) -v $(TEST_TIMEOUT) -p 1 -failfast -race ./grpc/... $(TEST_START_ARGS) | tee ../testr.log
 
 test_grpc_r:
-	$(GO) test -timeout $(TEST_TIMEOUT) -p 1 -failfast -race ./grpc/... $(TEST_ARGS) | tee ../testr.log
+	$(GO) test $(TEST_ARGS) $(TEST_TIMEOUT) -p 1 -failfast -race ./grpc/... $(TEST_START_ARGS) | tee ../testr.log
 
 test_grpc_cov_out:
-	$(GO) test -p 1 -failfast -timeout $(TEST_TIMEOUT) \
+	$(GO) test $(TEST_ARGS) -p 1 -failfast $(TEST_TIMEOUT) \
 		-coverpkg=github.com/findy-network/findy-agent/... \
 		-coverprofile=$(COV_FILE)  \
 		-covermode=atomic \
 		./grpc/...
 
 test_grpcv_cov_out:
-	$(GO) test -v -p 1 -failfast -timeout $(TEST_TIMEOUT) \
+	$(GO) test $(TEST_ARGS) -v -p 1 -failfast $(TEST_TIMEOUT) \
 		-coverpkg=github.com/findy-network/findy-agent/... \
 		-coverprofile=$(COV_FILE)  \
 		-covermode=atomic \
 		./grpc/... \
-		$(TEST_ARGS) | tee ../testr.log
+		$(TEST_START_ARGS) | tee ../testr.log
 
 testrv:
-	$(GO) test -v -timeout $(TEST_TIMEOUT) -p 1 -failfast -race ./... $(TEST_ARGS) | tee ../testr.log
+	$(GO) test $(TEST_ARGS) -v $(TEST_TIMEOUT) -p 1 -failfast -race ./... $(TEST_START_ARGS) | tee ../testr.log
 
 testv:
-	$(GO) test -v -p 1 -failfast ./...
+	$(GO) test $(TEST_ARGS) -v -p 1 -failfast ./...
 
 test_cov_out:
-	$(GO) test -p 1 -failfast -timeout=1200s \
+	$(GO) test $(TEST_ARGS) -p 1 -failfast -timeout=1200s \
 		-coverpkg=github.com/findy-network/findy-agent/... \
 		-coverprofile=$(COV_FILE)  \
 		-covermode=atomic \
